@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1069354970768",
+    "project_id": "react-native-firebasechatapp",
+    "storage_bucket": "react-native-firebasechatapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069354970768:android:54d8597a3b6ad098a37215",
+        "android_client_info": {
+          "package_name": "com.lazytrunk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAB7rJZ6tIVz-IjwkpI2wPDXbI8ZPXn9SI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
