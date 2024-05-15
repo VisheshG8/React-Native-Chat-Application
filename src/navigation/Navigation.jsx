@@ -1,13 +1,14 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from '../screens/Home';
 import Settings from '../screens/Settings';
-import React, { useEffect } from 'react';
+import React, { Profiler, useEffect } from 'react';
 import Login from '../screens/Login';
 import Signup from '../screens/Signup';
 import Welcome from '../screens/Welcome';
 import Chat from '../screens/Chat';
 import Main from '../screens/Main';
 import Splash from '../screens/Splash';
+import Profile from '../screens/Profile'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
 const Stack = createNativeStackNavigator();
@@ -42,7 +43,7 @@ const AppNavigation = () => {
         animation: 'slide_from_right',
         headerBackTitleVisible: false,
       }} >
-
+        
       <Stack.Screen
         name="Home"
         component={Home}
@@ -83,7 +84,12 @@ const AppNavigation = () => {
         component={Chat}
         options={{headerShown: false}}
       />       
-    </Stack.Navigator>
+      <Stack.Screen
+      name='Profile'
+      component={Profile}
+      options={{headerShown: true}}
+      />
+      </Stack.Navigator>
 
   );
 };

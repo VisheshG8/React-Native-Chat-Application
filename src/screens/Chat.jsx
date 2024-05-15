@@ -19,6 +19,7 @@ const Chat = () => {
       });
       setMessageList(allmessages);
     });
+    
     return () => subscriber;
   }, []);
 
