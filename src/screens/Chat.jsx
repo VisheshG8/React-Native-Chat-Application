@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet} from 'react-native';
+import {View, StyleSheet, ImageBackground, ActivityIndicator} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {GiftedChat} from 'react-native-gifted-chat';
 import {useRoute} from '@react-navigation/native';
@@ -6,22 +6,50 @@ import firestore from '@react-native-firebase/firestore';
 
 const Chat = () => {
   const [messageList, setMessageList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const route = useRoute();
-  useEffect(() => {
+  const uniqueId = route.params.id + route.params.data.userId;
+
+
+  useEffect(() => { 
+    const fetchMessages = async () => {
+      try {
+        console.log('Fetching initial messages...');
+        const snapshot = await firestore()
+          .collection('chats')
+          .doc(uniqueId)
+          .collection('messages')
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        const allMessages = snapshot.docs.map(item => {
+          return { ...item._data, createdAt: item._data.createdAt };
+        });
+        setMessageList(allMessages);
+      } catch (error) {
+        console.error("Error fetching initial messages:", error);
+      } finally {
+        setIsLoading(false); // Set loading to false after initial fetch
+      }
+    };
+
+    fetchMessages();
+
     const subscriber = firestore()
       .collection('chats')
-      .doc(route.params.id + route.params.data.userId)
+      .doc(uniqueId)
       .collection('messages')
       .orderBy('createdAt', 'desc');
     subscriber.onSnapshot(querysnapshot => {
-      const allmessages = querysnapshot.docs.map(item => {
-        return {...item._data, createdAt: item._data.createdAt};
+      console.log('Updating messages in real-time...');
+      const newMessages = querysnapshot.docs.map(item => {
+        return { ...item._data, createdAt: item._data.createdAt };
       });
-      setMessageList(allmessages);
+      setMessageList(newMessages);
     });
-    
-    return () => subscriber;
-  }, []);
+
+    return () => subscriber; 
+  }, []); 
 
   const onSend = useCallback(async (messages = []) => {
     const msg = messages[0];
@@ -48,29 +76,42 @@ const Chat = () => {
 
   return (
     <View style={styles.mainScreen}>
-      <GiftedChat
-        renderAvatar={null}
-        messages={messageList}
-        onSend={messages => onSend(messages)}
-        user={{
-          _id: route.params.id,
-        }}
-        textInputStyle={styles.messageBox}
-      />
-      
+      <ImageBackground
+        style={{flex: 1}}
+        source={require('../assets/background.png')}>
+          {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="white" />
+          </View>
+        ) : (
+        <GiftedChat
+          renderAvatar={null}
+          messages={messageList}
+          onSend={messages => onSend(messages)}
+          user={{
+            _id: route.params.id,
+          }}
+          textInputStyle={styles.messageBox}
+        />)}
+      </ImageBackground>
     </View>
   );
 };
 export default Chat;
 
 const styles = StyleSheet.create({
- mainScreen:{
-  flex:1,
-  backgroundColor:'#031525',
-  color:'black'
- },
- messageBox:{
-  backgroundColor:'white',
-  color:'black'
- }
+  mainScreen: {
+    flex: 1,
+    backgroundColor: '#031525',
+    color: 'black',
+  },
+  messageBox: {
+    backgroundColor: 'white',
+    color: 'black',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

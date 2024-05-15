@@ -17,7 +17,7 @@ const Home = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollview}>
+      <ScrollView>
         <ImageBackground
           source={require('../assets/lazy-trunk-background.jpeg')}
           style={styles.imageBackground}>

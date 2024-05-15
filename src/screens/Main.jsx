@@ -4,20 +4,19 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
-  Image,
   TouchableOpacity,
   Pressable,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import generateColorFromInitial from '../Components/randomColorGenerator';
 let id = '';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const navigation = useNavigation();
-  const isFocued = useIsFocused();
   const [userIcon,setuserIcon] = useState('A');
   const [name,setName] = useState('Anonymous');
   const [email,setEmail] = useState('anonymous@email.com')
@@ -31,7 +30,8 @@ const Users = () => {
   const getUsers = async () => {
     id = await AsyncStorage.getItem('USERID');
     let tempData = [];
-    setEmail(await AsyncStorage.getItem('EMAIL'));
+    const email = await AsyncStorage.getItem('EMAIL');
+    setEmail(email);
     firestore()
       .collection('Users')
       .where('email', '!=', email)
@@ -73,11 +73,10 @@ const Users = () => {
               onPress={() => {
                 navigation.navigate('Chat', {data: item, id: id});
               }}>
-              <Image
-                source={require('../assets/user.png')}
-                style={[styles.userIcon]}
-              />
-              <Text style={styles.name}>{item.name}</Text>
+             <View style={[styles.profileIcon, { backgroundColor: generateColorFromInitial(String(item.name.charAt(0))) }]}>
+              <Text style={styles.userIconText}>{String(item.name).substring(0,2).toUpperCase()}</Text>
+             </View>
+              <Text style={styles.name}>{String(item.name)}</Text>
             </TouchableOpacity>
           );
         }}
@@ -133,6 +132,11 @@ const styles = StyleSheet.create({
   },
   ProfileText:{
     fontSize:20,
+  },
+
+  userIconText:{
+    color: 'white', // or a suitable contrasting color
+    fontWeight: 'bold',
   },
   name: {color: 'black', marginLeft: 20, fontSize: 20},
 });
